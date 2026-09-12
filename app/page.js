@@ -50,7 +50,8 @@ export default function Home() {
 
   const supply = toNum(supplyArea)
   const ratio = toNum(exclusiveRatio)
-  const exclusive = supply !== null && ratio !== null ? supply * (ratio / 100) : null
+  const ratioOutOfRange = ratio !== null && (ratio < 0 || ratio > 100)
+  const exclusive = supply !== null && ratio !== null && !ratioOutOfRange ? supply * (ratio / 100) : null
   const exclusivePyeong = exclusive !== null ? exclusive / PER_PYEONG : null
 
   return (
@@ -161,6 +162,11 @@ export default function Home() {
               />
             </div>
           </div>
+          {ratioOutOfRange && (
+            <div className="bg-red-50 rounded-xl px-4 py-3">
+              <p className="text-sm text-red-600">전용률은 0~100% 사이로 입력해주세요.</p>
+            </div>
+          )}
           {exclusive !== null && (
             <div className="bg-green-50 rounded-xl px-4 py-3 space-y-1">
               <p className="text-sm text-green-700">
@@ -171,6 +177,27 @@ export default function Home() {
               </p>
             </div>
           )}
+        </section>
+
+        {/* 환산표 */}
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h2 className="text-base font-semibold text-gray-700 mb-4">자주 찾는 평수 환산표</h2>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="text-left font-medium text-gray-500 pb-2">평 (坪)</th>
+                <th className="text-right font-medium text-gray-500 pb-2">제곱미터 (㎡)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 11 }, (_, i) => (i + 2) * 5).map(p => (
+                <tr key={p} className="border-b border-gray-50 last:border-0">
+                  <td className="py-2 text-gray-700 font-medium">{p}평</td>
+                  <td className="py-2 text-right text-gray-600">{fmt(p * PER_PYEONG)} ㎡</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
 
         <p className="text-center text-xs text-gray-400 pb-4">1평 = 3.305785 ㎡</p>
